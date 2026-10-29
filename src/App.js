@@ -12,24 +12,54 @@ import { useEffect, useState } from "react";
 import { use } from "react";
 
 const theme = createTheme({});
+let cancelAxios = null;
 
 function App() {
-
-  const [ville,setVille]=useState();
+  const today = new Date().toLocaleDateString("en-US");
+  const [ville, setVille] = useState();
+  const [temp, setTemp] = useState({
+    number: null,
+    description: "",
+    min: null,
+    max: null,
+    icon: null
+  });
 
   useEffect(() => {
     axios
-      .get("https://api.openweathermap.org/data/2.5/weather?lat=34.020882&lon=-6.84165&appid=a0d2f72bba30defc7eb7e7e711460615")
+      .get(
+        "https://api.openweathermap.org/data/2.5/weather?lat=34.020882&lon=-6.84165&appid=a0d2f72bba30defc7eb7e7e711460615",
+        {
+          cancelToken: new axios.CancelToken((c) => {
+            cancelAxios = c;
+          }),
+        },
+      )
       .then((response) => {
-        setVille(response.data.name)
+
+        setVille(response.data.name);
+
+        const responseTemp = Math.round(response.data.main.temp - 272.15);
+        const min = Math.round(response.data.main.temp_min - 272.15);
+        const max = Math.round(response.data.main.temp_max - 272.15);
+        const description = response.data.weather[0].description;
+
+        setTemp({
+          number: responseTemp,
+          min: min,
+          max: max,
+          description: description,
+          icon: `https://openweathermap.org/payload/api/media/file/${response.data.weather[0].icon}%402x.png`
+        });
+
         console.log(response.data);
       })
       .catch((error) => {
         console.error(error);
-      })
-      .finally(() => {
-        console.log("Request completed");
       });
+    return () => {
+      cancelAxios();
+    };
   }, []);
 
   return (
@@ -75,7 +105,7 @@ function App() {
                 </Typography>
 
                 <Typography variant="h5" style={{ marginRight: "20px" }}>
-                  Lundi 26-10-2026
+                  {today}
                 </Typography>
               </div>
               {/*==== CITY AND TIME ====*/}
@@ -86,18 +116,20 @@ function App() {
                 {/* DEGRY AND DESCRIPTION */}
                 <div>
                   {/* TEMP */}
-                  <div>
+                  <div style={{display:"flex", justifyContent:"center"}}>
                     <Typography variant="h1" style={{ textAlign: "left" }}>
-                      36
+                      {temp.number}
                     </Typography>
 
                     {/* TODO : TEMP IMAGE */}
+                    <img src={temp.icon}/>
+                      
                     {/* =======TODO : TEMP IMAGE===== */}
                   </div>
                   {/* ==== TEMP === */}
 
                   <Typography variant="h6" style={{}}>
-                    Brocken clouds
+                    {temp.description}
                   </Typography>
 
                   {/* MIN AND MAX */}
@@ -108,9 +140,9 @@ function App() {
                       alignItems: "center'",
                     }}
                   >
-                    <h5>min : 34</h5>
+                    <h5>min : {temp.min}</h5>
                     <h5>|</h5>
-                    <h5>max : 39</h5>
+                    <h5>max : {temp.max}</h5>
                   </div>
                   {/* ====MIN AND MAX=== */}
                 </div>
