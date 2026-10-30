@@ -10,11 +10,17 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { use } from "react";
+import moment from "moment/moment";
+// import "moment/min/locales";
+// moment.locale("ar");
 
 const theme = createTheme({});
 let cancelAxios = null;
 
 function App() {
+
+  const [dateAndTime,setDateAndTime] = useState();
+
   const today = new Date().toLocaleDateString("en-US");
   const [ville, setVille] = useState();
   const [temp, setTemp] = useState({
@@ -49,7 +55,7 @@ function App() {
           min: min,
           max: max,
           description: description,
-          icon: `https://openweathermap.org/payload/api/media/file/${response.data.weather[0].icon}%402x.png`
+          icon: `https://openweathermap.org/payload/api/media/file/10d%402x.png`
         });
 
         console.log(response.data);
@@ -61,6 +67,11 @@ function App() {
       cancelAxios();
     };
   }, []);
+
+  useEffect(()=>{
+    //on peut l'ajouter dans la meme useEffect precedente
+    setDateAndTime(moment().format('dddd MMMM Do YYYY'))
+  }, [])
 
   return (
     <div className="App">
@@ -105,7 +116,7 @@ function App() {
                 </Typography>
 
                 <Typography variant="h5" style={{ marginRight: "20px" }}>
-                  {today}
+                  {dateAndTime}
                 </Typography>
               </div>
               {/*==== CITY AND TIME ====*/}
