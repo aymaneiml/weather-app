@@ -11,10 +11,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { use } from "react";
 import moment from "moment/moment";
-// import "moment/min/locales";
-// moment.locale("ar");
-
 import { useTranslation } from "react-i18next";
+import "moment/min/locales";
+moment.locale("en");
+
+
 
 const theme = createTheme({});
 let cancelAxios = null;
@@ -23,7 +24,7 @@ function App() {
   const { t, i18n } = useTranslation();
 
   const [dateAndTime, setDateAndTime] = useState();
-
+  const [locale, setLocale] = useState("en");
   const today = new Date().toLocaleDateString("en-US");
   const [ville, setVille] = useState();
   const [temp, setTemp] = useState({
@@ -33,6 +34,22 @@ function App() {
     max: null,
     icon: null,
   });
+
+  //EVENT HANDLERS
+  function handleLnaguageClick() {
+    if (locale == "ar") {
+      setLocale("en");
+      i18n.changeLanguage("en");
+      moment.locale("en");
+    }else{
+      setLocale("ar");
+      i18n.changeLanguage("ar");
+      moment.locale("ar");
+    }
+
+    setDateAndTime(moment().format("dddd MMMM Do YYYY"));
+
+  }
 
   useEffect(() => {
     axios
@@ -72,7 +89,7 @@ function App() {
 
   useEffect(() => {
     //change language
-    i18n.changeLanguage("ar");
+    i18n.changeLanguage(locale);
   }, []);
 
   useEffect(() => {
@@ -147,7 +164,7 @@ function App() {
                   {/* ==== TEMP === */}
 
                   <Typography variant="h6" style={{}}>
-                    {temp.description}
+                    {t(temp.description)}
                   </Typography>
 
                   {/* MIN AND MAX */}
@@ -158,9 +175,9 @@ function App() {
                       alignItems: "center'",
                     }}
                   >
-                    <h5>min : {temp.min}</h5>
+                    <h5>{t("min")} : {temp.min}</h5>
                     <h5>|</h5>
-                    <h5>max : {temp.max}</h5>
+                    <h5>{t("max")} : {temp.max}</h5>
                   </div>
                   {/* ====MIN AND MAX=== */}
                 </div>
@@ -186,8 +203,12 @@ function App() {
               justifyContent: "end",
             }}
           >
-            <Button variant="text" style={{ color: "white" }}>
-              Arabe
+            <Button
+              onClick={handleLnaguageClick}
+              variant="text"
+              style={{ color: "white" }}
+            >
+              {locale=="en" ? "Arabic" : "إنجليزي"}
             </Button>
           </div>
           {/* ==== TRANSLATION CONTAINER === */}
