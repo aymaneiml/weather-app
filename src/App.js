@@ -14,12 +14,15 @@ import moment from "moment/moment";
 // import "moment/min/locales";
 // moment.locale("ar");
 
+import { useTranslation } from "react-i18next";
+
 const theme = createTheme({});
 let cancelAxios = null;
 
 function App() {
+  const { t, i18n } = useTranslation();
 
-  const [dateAndTime,setDateAndTime] = useState();
+  const [dateAndTime, setDateAndTime] = useState();
 
   const today = new Date().toLocaleDateString("en-US");
   const [ville, setVille] = useState();
@@ -28,7 +31,7 @@ function App() {
     description: "",
     min: null,
     max: null,
-    icon: null
+    icon: null,
   });
 
   useEffect(() => {
@@ -42,7 +45,6 @@ function App() {
         },
       )
       .then((response) => {
-
         setVille(response.data.name);
 
         const responseTemp = Math.round(response.data.main.temp - 272.15);
@@ -55,7 +57,7 @@ function App() {
           min: min,
           max: max,
           description: description,
-          icon: `https://openweathermap.org/payload/api/media/file/10d%402x.png`
+          icon: `https://openweathermap.org/payload/api/media/file/10d%402x.png`,
         });
 
         console.log(response.data);
@@ -68,10 +70,15 @@ function App() {
     };
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
+    //change language
+    i18n.changeLanguage("ar");
+  }, []);
+
+  useEffect(() => {
     //on peut l'ajouter dans la meme useEffect precedente
-    setDateAndTime(moment().format('dddd MMMM Do YYYY'))
-  }, [])
+    setDateAndTime(moment().format("dddd MMMM Do YYYY"));
+  }, []);
 
   return (
     <div className="App">
@@ -112,7 +119,7 @@ function App() {
                   variant="h3"
                   style={{ marginRight: "20px", fontWeight: "600" }}
                 >
-                  {ville}
+                  {t(ville)}
                 </Typography>
 
                 <Typography variant="h5" style={{ marginRight: "20px" }}>
@@ -127,14 +134,14 @@ function App() {
                 {/* DEGRY AND DESCRIPTION */}
                 <div>
                   {/* TEMP */}
-                  <div style={{display:"flex", justifyContent:"center"}}>
+                  <div style={{ display: "flex", justifyContent: "center" }}>
                     <Typography variant="h1" style={{ textAlign: "left" }}>
                       {temp.number}
                     </Typography>
 
                     {/* TODO : TEMP IMAGE */}
-                    <img src={temp.icon}/>
-                      
+                    <img src={temp.icon} />
+
                     {/* =======TODO : TEMP IMAGE===== */}
                   </div>
                   {/* ==== TEMP === */}
